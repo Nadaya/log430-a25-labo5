@@ -12,6 +12,8 @@ from orders.controllers.user_controller import create_user, remove_user, get_use
 from stocks.controllers.product_controller import create_product, remove_product, get_product
 from stocks.controllers.stock_controller import get_stock, populate_redis_on_startup, set_stock, get_stock_overview
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+
+import time
  
 app = Flask(__name__)
 
@@ -23,6 +25,12 @@ thread.start()
 counter_orders = Counter('orders', 'Calls to orders')
 counter_highest_spenders = Counter('highest_spenders', 'Calls to highest spenders report')
 counter_best_sellers = Counter('best_sellers', 'Calls to best sellers report')
+
+@app.get('/test/slow/<int:delay_seconds>')
+def test_slow_endpoint(delay_seconds):
+    """Endpoint pour tester les timeouts"""
+    time.sleep(delay_seconds)  # Simule une opération lente
+    return {"message": f"Response after {delay_seconds} seconds"}, 200
 
 @app.get('/health-check')
 def health():
